@@ -1,8 +1,7 @@
-import { onCall } from "firebase-functions/v2/https";
-import { getFirestore } from "firebase-admin/firestore";
-import { HttpsError } from "firebase-functions/v2/https";
+import {onCall, HttpsError} from "firebase-functions/v2/https";
+import {getFirestore} from "firebase-admin/firestore";
 
-export const createUserProfile = onCall({ region: "europe-west2" }, async (request) => {
+export const createUserProfile = onCall({region: "europe-west2"}, async (request) => {
   const db = getFirestore();
 
   if (!request.auth?.uid) {
@@ -18,7 +17,7 @@ export const createUserProfile = onCall({ region: "europe-west2" }, async (reque
       createdAt: new Date(),
     });
 
-    return { message: "User profile created successfully." };
+    return {message: "User profile created successfully."};
   } catch (error) {
     console.error("Error creating user profile:", error);
     throw new HttpsError("internal", "Failed to create user profile.");

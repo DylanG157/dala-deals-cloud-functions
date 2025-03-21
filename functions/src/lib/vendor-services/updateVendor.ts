@@ -1,14 +1,13 @@
-import { onCall } from "firebase-functions/v2/https";
-import { getFirestore } from "firebase-admin/firestore";
-import { HttpsError } from "firebase-functions/v2/https";
+import {onCall, HttpsError} from "firebase-functions/v2/https";
+import {getFirestore} from "firebase-admin/firestore";
 
 export const updateVendor = onCall(
-  { region: "europe-west2" },
+  {region: "europe-west2"},
   async (request) => {
     const db = getFirestore();
 
     try {
-      const { vendorId, updateData } = request.data;
+      const {vendorId, updateData} = request.data;
 
       if (!vendorId || !updateData) {
         throw new HttpsError(
@@ -29,7 +28,7 @@ export const updateVendor = onCall(
 
       await vendorRef.update(updateData);
 
-      return { message: `Vendor ${vendorId} updated successfully.` };
+      return {message: `Vendor ${vendorId} updated successfully.`};
     } catch (error) {
       console.error("Error updating vendor:", error);
       throw new HttpsError("internal", "Failed to update vendor.");

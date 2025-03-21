@@ -1,11 +1,10 @@
-import { onRequest } from "firebase-functions/v2/https";
-import { getFirestore } from "firebase-admin/firestore";
+import {onRequest} from "firebase-functions/v2/https";
+import {getFirestore} from "firebase-admin/firestore";
 
 
-export const payfastNotify = onRequest({ region: "europe-west2" }, async (req, res) => {
+export const payfastNotify = onRequest({region: "europe-west2"}, async (req, res) => {
   try {
- 
-    const { custom_str1, payment_status } = req.body;
+    const {custom_str1, payment_status} = req.body;
     const orderId = custom_str1;
 
     const db = getFirestore();

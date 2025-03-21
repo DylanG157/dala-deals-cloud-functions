@@ -1,14 +1,13 @@
-import { onCall } from "firebase-functions/v2/https";
-import { getFirestore } from "firebase-admin/firestore";
-import { HttpsError } from "firebase-functions/v2/https";
+import {onCall, HttpsError} from "firebase-functions/v2/https";
+import {getFirestore} from "firebase-admin/firestore";
 
 export const removeVendorFromUser = onCall(
-  { region: "europe-west2" },
+  {region: "europe-west2"},
   async (request) => {
     const db = getFirestore();
 
     try {
-      const { uid, vendorId } = request.data;
+      const {uid, vendorId} = request.data;
 
       if (!uid || !vendorId) {
         throw new HttpsError(
@@ -32,9 +31,9 @@ export const removeVendorFromUser = onCall(
         (emp: any) => emp.uid !== uid
       );
 
-      await vendorRef.update({ employees: updatedEmployees });
+      await vendorRef.update({employees: updatedEmployees});
 
-      return { message: `Vendor ${vendorId} removed from user ${uid}.` };
+      return {message: `Vendor ${vendorId} removed from user ${uid}.`};
     } catch (error) {
       console.error("Error removing vendor from user:", error);
       throw new HttpsError("internal", "Failed to remove vendor from user.");

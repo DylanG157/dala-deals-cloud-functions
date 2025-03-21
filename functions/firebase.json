@@ -1,0 +1,7 @@
+{
+  "functions": {
+    "source": ".",
+    "predeploy": ["npm run lint", "npm run build"],
+    "runtime": "nodejs22"
+  }
+}

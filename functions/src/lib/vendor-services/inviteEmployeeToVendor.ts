@@ -1,12 +1,11 @@
-import { onCall } from "firebase-functions/v2/https";
-import { getFirestore } from "firebase-admin/firestore";
-import { HttpsError } from "firebase-functions/v2/https";
+import {onCall, HttpsError} from "firebase-functions/v2/https";
+import {getFirestore} from "firebase-admin/firestore";
 
 const db = getFirestore();
 
-export const inviteEmployeeToVendor = onCall({ region: "europe-west2" }, async (request) => {
+export const inviteEmployeeToVendor = onCall({region: "europe-west2"}, async (request) => {
   try {
-    const { vendorId, userEmail, role } = request.data;
+    const {vendorId, userEmail, role} = request.data;
 
     if (!vendorId || !userEmail || !role) {
       throw new HttpsError("invalid-argument", "Vendor ID, user email, and role are required.");
@@ -20,7 +19,7 @@ export const inviteEmployeeToVendor = onCall({ region: "europe-west2" }, async (
     }
 
     const userDoc = querySnapshot.docs[0];
-    const userId = userDoc.id; 
+    const userId = userDoc.id;
 
     const vendorRef = db.collection("vendors").doc(vendorId);
     const vendorDoc = await vendorRef.get();
@@ -38,11 +37,11 @@ export const inviteEmployeeToVendor = onCall({ region: "europe-west2" }, async (
       throw new HttpsError("already-exists", `User ${userEmail} is already an employee.`);
     }
 
-    const updatedEmployees = [...employees, { uid: userId, role }];
+    const updatedEmployees = [...employees, {uid: userId, role}];
 
-    await vendorRef.update({ employees: updatedEmployees });
+    await vendorRef.update({employees: updatedEmployees});
 
-    return { message: `User ${userEmail} (UID: ${userId}) invited successfully.` };
+    return {message: `User ${userEmail} (UID: ${userId}) invited successfully.`};
   } catch (error) {
     console.error("Error inviting employee:", error);
     throw new HttpsError("internal", "Failed to invite employee.");

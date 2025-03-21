@@ -1,22 +1,22 @@
 // functions/src/index.ts (continuing in the same file)
 
-import { onRequest } from "firebase-functions/v2/https";
+import {onRequest} from "firebase-functions/v2/https";
 import cors from "cors";
 import * as crypto from "crypto";
 
-const corsHandler = cors({ origin: true });
+const corsHandler = cors({origin: true});
 
-export const initiatePayfastPayment = onRequest({ region: "europe-west2" }, async (req, res) => {
+export const initiatePayfastPayment = onRequest({region: "europe-west2"}, async (req, res) => {
   corsHandler(req, res, async () => {
     if (req.method !== "POST") {
       return res.status(405).send("Method Not Allowed");
     }
 
     try {
-      const { totalAmount, orderId, itemName, userEmail } = req.body;
+      const {totalAmount, orderId, itemName, userEmail} = req.body;
 
       if (!totalAmount || !orderId || !itemName || !userEmail) {
-        return res.status(400).json({ error: "Missing required fields." });
+        return res.status(400).json({error: "Missing required fields."});
       }
 
       const merchantId = "10037460";
@@ -26,7 +26,7 @@ export const initiatePayfastPayment = onRequest({ region: "europe-west2" }, asyn
       // PayFast sandbox URLs
       const payfastUrl = "https://sandbox.payfast.co.za/eng/process";
 
-      // We append ?orderId=XYZ so when payment completes, 
+      // We append ?orderId=XYZ so when payment completes,
       // PayFast sends user back to PaymentSuccess with the order ID
       const returnUrl = `http://localhost:4200/payment-success?orderId=${orderId}`;
       const cancelUrl = "http://localhost:4200/payment-cancel";
@@ -41,7 +41,7 @@ export const initiatePayfastPayment = onRequest({ region: "europe-west2" }, asyn
         notify_url: notifyUrl,
         amount: parseFloat(totalAmount).toFixed(2),
         item_name: itemName,
-        
+
         // If you want PayFast to pass the orderId along in the IPN:
         custom_str1: orderId,
       };
@@ -56,7 +56,7 @@ export const initiatePayfastPayment = onRequest({ region: "europe-west2" }, asyn
       });
     } catch (error) {
       console.error("PayFast Error:", error);
-      return res.status(500).json({ error: "Internal Server Error" });
+      return res.status(500).json({error: "Internal Server Error"});
     }
   });
 });

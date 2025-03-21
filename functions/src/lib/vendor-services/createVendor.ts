@@ -1,54 +1,54 @@
-import { onCall, HttpsError } from 'firebase-functions/v2/https';
-import { getFirestore, FieldValue } from 'firebase-admin/firestore';
-import sgMail from '@sendgrid/mail';
+import {onCall, HttpsError} from "firebase-functions/v2/https";
+import {getFirestore, FieldValue} from "firebase-admin/firestore";
+import sgMail from "@sendgrid/mail";
 
 const db = getFirestore();
 
 export const createVendor = onCall(
-  { region: 'europe-west2', secrets: ['SENDGRID_API_KEY'] },
+  {region: "europe-west2", secrets: ["SENDGRID_API_KEY"]},
   async (request) => {
     try {
       // 1. Ensure user is authenticated
       if (!request.auth) {
-        throw new HttpsError('unauthenticated', 'User must be authenticated.');
+        throw new HttpsError("unauthenticated", "User must be authenticated.");
       }
 
       // 2. Retrieve user info from the token
       const callerUid = request.auth.uid; // The caller's UID
 
       // 3. Get the SendGrid API key and set it up
-      const sendGridApiKey = process.env['SENDGRID_API_KEY'];
-      sgMail.setApiKey(sendGridApiKey || '');
+      const sendGridApiKey = process.env["SENDGRID_API_KEY"];
+      sgMail.setApiKey(sendGridApiKey || "");
 
       // 4. Grab vendorData from request data
-      const { vendorData } = request.data;
-      if (!vendorData || typeof vendorData !== 'object') {
-        throw new HttpsError('invalid-argument', 'Vendor data is required.');
+      const {vendorData} = request.data;
+      if (!vendorData || typeof vendorData !== "object") {
+        throw new HttpsError("invalid-argument", "Vendor data is required.");
       }
 
       // 5. Retrieve the user doc of the caller
-      const userDocRef = db.collection('users').doc(callerUid);
+      const userDocRef = db.collection("users").doc(callerUid);
       const userDocSnap = await userDocRef.get();
       if (!userDocSnap.exists) {
         throw new HttpsError(
-          'not-found',
-          'User record not found in Firestore.'
+          "not-found",
+          "User record not found in Firestore."
         );
       }
       const userData = userDocSnap.data();
-      const ownerEmail = userData?.['email'];
+      const ownerEmail = userData?.["email"];
       if (!ownerEmail) {
         throw new HttpsError(
-          'not-found',
-          'User record has no email field in Firestore.'
+          "not-found",
+          "User record has no email field in Firestore."
         );
       }
 
       // 6. Determine which email template to use based on existing vendors
       // If vendorIds exist and have at least one vendor, use the second template.
-      const existingVendors = userData['vendorIds'] || [];
-      const firstTemplateId = 'd-72d730d637ed42899a0f4c0665e706a6';
-      const additionalTemplateId = 'd-349b669fd9c94694b178d8fefd130bfc'; // Replace with your additional vendor template ID
+      const existingVendors = userData["vendorIds"] || [];
+      const firstTemplateId = "d-72d730d637ed42899a0f4c0665e706a6";
+      const additionalTemplateId = "d-349b669fd9c94694b178d8fefd130bfc"; // Replace with your additional vendor template ID
       const chosenTemplateId =
         existingVendors.length > 0 ? additionalTemplateId : firstTemplateId;
 
@@ -58,7 +58,7 @@ export const createVendor = onCall(
         ownerId: callerUid,
         createdAt: new Date().toISOString(),
       };
-      const vendorRef = await db.collection('vendors').add(newVendor);
+      const vendorRef = await db.collection("vendors").add(newVendor);
       const vendorId = vendorRef.id;
 
       // 8. Update the user's vendorIds array
@@ -77,7 +77,7 @@ export const createVendor = onCall(
       // 10. Prepare dynamic data for the SendGrid template
       const msg = {
         to: recipients,
-        from: 'noreply@daladeals.co.za',
+        from: "noreply@daladeals.co.za",
         templateId: chosenTemplateId,
         dynamic_template_data: {
           vendorName: vendorData.name,
@@ -93,11 +93,11 @@ export const createVendor = onCall(
 
       return {
         vendorId,
-        message: 'Vendor created and email sent to the caller successfully.',
+        message: "Vendor created and email sent to the caller successfully.",
       };
     } catch (error) {
-      console.error('Error creating vendor:', error);
-      throw new HttpsError('internal', 'Failed to create vendor.');
+      console.error("Error creating vendor:", error);
+      throw new HttpsError("internal", "Failed to create vendor.");
     }
   }
 );

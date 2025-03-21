@@ -1,4 +1,4 @@
-import { DalaBag } from './dalaBag.model';
+import {DalaBag} from "./dalaBag.model";
 
 export interface CartItem {
   offer: DalaBag;

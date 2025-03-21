@@ -1,17 +1,17 @@
-import { getFirestore } from "firebase-admin/firestore";
-import { onCall, HttpsError } from "firebase-functions/v2/https";
+import {getFirestore} from "firebase-admin/firestore";
+import {onCall, HttpsError} from "firebase-functions/v2/https";
 import * as crypto from "crypto";
-import { Order, OrderItem } from "../models/order.model";
+import {Order, OrderItem} from "../models/order.model";
 
 export const createOrder = onCall(
-  { region: "europe-west2" },
+  {region: "europe-west2"},
   async (request) => {
     if (!request.auth?.uid) {
       throw new HttpsError("unauthenticated", "User must be authenticated.");
     }
 
     try {
-      const { clientId, orderItems, totalPrice, specialNotes } = request.data;
+      const {clientId, orderItems, totalPrice, specialNotes} = request.data;
 
       // Validate input data
       if (
@@ -61,7 +61,7 @@ export const createOrder = onCall(
 
       // Generate order verification QR link
       const orderQRLink = `http://localhost:4200/verify?orderId=${orderRef.id}`;
-      await orderRef.update({ qrData: orderQRLink });
+      await orderRef.update({qrData: orderQRLink});
 
       return {
         orderId: orderRef.id,
