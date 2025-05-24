@@ -8,6 +8,7 @@ export { updateOrder } from "./lib/order-services/updateOrder";
 export { deleteOrder } from "./lib/order-services/deleteOrder";
 export { fetchOrdersByVendor } from "./lib/order-services/fetchOrdersByVendor";
 export { fetchOrdersByClient } from "./lib/order-services/fetchOrdersByClient";
+export { redeemOrder } from "./lib/order-services/redeemOrder";
 
 // dala-bags
 export { createDalaBag } from "./lib/dala-bags-services/createDalaBag";

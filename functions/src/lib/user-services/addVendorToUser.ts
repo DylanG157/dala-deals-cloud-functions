@@ -1,5 +1,5 @@
 import {onCall, HttpsError} from "firebase-functions/v2/https";
-import {getFirestore} from "firebase-admin/firestore";
+import {getFirestore, FieldValue} from "firebase-admin/firestore";
 
 export const addVendorToUser = onCall({region: "europe-west2"}, async (request) => {
   const db = getFirestore();
@@ -19,8 +19,10 @@ export const addVendorToUser = onCall({region: "europe-west2"}, async (request) 
     }
 
     const userRef = db.collection("users").doc(uid);
+    
+    // Use arrayUnion to safely add vendorId to the array
     await userRef.update({
-      vendorIds: vendorId,
+      vendorIds: FieldValue.arrayUnion(vendorId),
       [`roleByVendor.${vendorId}`]: role,
     });
 

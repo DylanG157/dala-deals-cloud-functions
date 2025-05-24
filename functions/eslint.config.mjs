@@ -23,8 +23,11 @@ export default [
     },
     rules: {
       "linebreak-style": ["error", "unix"],
-      "no-unused-vars": "warn",
-      "@typescript-eslint/no-unused-vars": "warn",
+      "no-unused-vars": "off",
+      "@typescript-eslint/no-unused-vars": ["warn", {
+        "args": "none",
+        "ignoreRestSiblings": true
+      }],
       "no-undef": "off",
       "@typescript-eslint/explicit-module-boundary-types": "off",
     },
