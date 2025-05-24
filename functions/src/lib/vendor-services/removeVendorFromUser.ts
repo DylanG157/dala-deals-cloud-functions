@@ -1,5 +1,5 @@
 import {onCall, HttpsError} from "firebase-functions/v2/https";
-import {getFirestore} from "firebase-admin/firestore";
+import {getFirestore, FieldValue} from "firebase-admin/firestore";
 
 export const removeVendorFromUser = onCall(
   {region: "europe-west2"},
@@ -31,7 +31,15 @@ export const removeVendorFromUser = onCall(
         (emp: any) => emp.uid !== uid
       );
 
+      // Update vendor's employee list
       await vendorRef.update({employees: updatedEmployees});
+      
+      // Update user's vendorIds array and remove the role
+      const userRef = db.collection("users").doc(uid);
+      await userRef.update({
+        vendorIds: FieldValue.arrayRemove(vendorId),
+        [`roleByVendor.${vendorId}`]: FieldValue.delete(),
+      });
 
       return {message: `Vendor ${vendorId} removed from user ${uid}.`};
     } catch (error) {
